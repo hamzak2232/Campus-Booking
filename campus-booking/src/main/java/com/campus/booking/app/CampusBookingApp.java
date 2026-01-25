@@ -52,33 +52,95 @@ public class CampusBookingApp {
     }
 
     private void seedData() {
-        studentService.registerStudent(
-                new Student("S1", "Hamza", "hamza@email.com", false)
-        );
+        // -----------------------------
+        // Seed Students
+        // -----------------------------
+        if (studentService.getStudentById("S1").isEmpty()) {
+            studentService.registerStudent(
+                    new Student("S1", "Hamza", "hamza@email.com", false)
+            );
+        }
 
-        roomService.addRoom(new Room(1, "Lab A", "Computer Lab"));
-        roomService.addRoom(new Room(2, "Meeting Room 1", "Meeting Room"));
+        if (studentService.getStudentById("S2").isEmpty()) {
+            studentService.registerStudent(
+                    new Student("S2", "Ali", "ali@email.com", false)
+            );
+        }
+
+        // -----------------------------
+        // Seed Rooms
+        // -----------------------------
+        boolean room1Exists = roomService.getRoomById(1).isPresent();
+        if (!room1Exists) {
+            roomService.addRoom(new Room(1, "Lab A", "Computer Lab"));
+        }
+
+        boolean room2Exists = roomService.getRoomById(2).isPresent();
+        if (!room2Exists) {
+            roomService.addRoom(new Room(2, "Meeting Room 1", "Meeting Room"));
+        }
     }
+
 
     private void createBooking() {
         try {
             String studentId = InputUtil.readString("Student ID: ");
             int roomId = InputUtil.readInt("Room ID: ");
 
+            // -----------------------------
+            // Validate Student
+            // -----------------------------
+            if (studentService.getStudentById(studentId).isEmpty()) {
+                System.out.println("Error: Student with ID '" + studentId + "' does not exist.");
+                return;
+            }
+
+            // -----------------------------
+            // Validate Room
+            // -----------------------------
+            if (roomService.getRoomById(roomId).isEmpty()) {
+                System.out.println("Error: Room with ID '" + roomId + "' does not exist.");
+                return;
+            }
+
+            // -----------------------------
+            // Create Booking
+            // -----------------------------
             Booking booking = bookingService.createBooking(studentId, roomId);
 
             System.out.println(
-                    "Booking successful at " +
-                            DateUtil.format(booking.getTimestamp())
+                    "Booking successful at " + DateUtil.format(booking.getTimestamp())
             );
 
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
+
     private void showBookings() {
-        bookingService.getAllBookings()
-                .forEach(System.out::println);
+        var bookings = bookingService.getAllBookings();
+
+        if (bookings.isEmpty()) {
+            System.out.println("No bookings found.");
+            return;
+        }
+
+        System.out.println("\n=== All Bookings ===");
+        for (var booking : bookings) {
+            String studentInfo = booking.getStudent().getName() + " (" + booking.getStudent().getId() + ")";
+            String roomInfo = booking.getRoom().getName() + " [" + booking.getRoom().getType() + "]";
+            String timestamp = DateUtil.format(booking.getTimestamp());
+
+            System.out.println("Booking #" + booking.getId() +
+                    ": " + studentInfo +
+                    " -> " + roomInfo +
+                    " at " + timestamp +
+                    " | Room Available: " + (booking.getRoom().isAvailable() ? "Yes" : "No"));
+        }
     }
+
 }

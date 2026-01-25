@@ -7,38 +7,47 @@ import com.campus.booking.repository.impl.StudentRepositoryImpl;
 import com.campus.booking.service.impl.BookingServiceImpl;
 import com.campus.booking.service.impl.RoomServiceImpl;
 import com.campus.booking.service.impl.StudentServiceImpl;
+import com.campus.booking.util.DbConnectionUtil;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        // Repositories
-        StudentRepositoryImpl studentRepository = new StudentRepositoryImpl();
-        RoomRepositoryImpl roomRepository = new RoomRepositoryImpl();
-        BookingRepositoryImpl bookingRepository = new BookingRepositoryImpl();
+//        // Repositories
+//        StudentRepositoryImpl studentRepository = new StudentRepositoryImpl();
+//        RoomRepositoryImpl roomRepository = new RoomRepositoryImpl();
+//        BookingRepositoryImpl bookingRepository = new BookingRepositoryImpl();
+//
+//        // Services
+//        StudentServiceImpl studentService =
+//                new StudentServiceImpl(studentRepository);
+//
+//        RoomServiceImpl roomService =
+//                new RoomServiceImpl(roomRepository);
+//
+//        BookingServiceImpl bookingService =
+//                new BookingServiceImpl(
+//                        bookingRepository,
+//                        studentRepository,
+//                        roomRepository
+//                );
+//
+//        // App
+//        CampusBookingApp app =
+//                new CampusBookingApp(
+//                        studentService,
+//                        roomService,
+//                        bookingService
+//                );
+//
+//        app.start();
 
-        // Services
-        StudentServiceImpl studentService =
-                new StudentServiceImpl(studentRepository);
+        try {
+            DbConnectionUtil.getConnection();
+            System.out.println("DB Connected Successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        RoomServiceImpl roomService =
-                new RoomServiceImpl(roomRepository);
-
-        BookingServiceImpl bookingService =
-                new BookingServiceImpl(
-                        bookingRepository,
-                        studentRepository,
-                        roomRepository
-                );
-
-        // App
-        CampusBookingApp app =
-                new CampusBookingApp(
-                        studentService,
-                        roomService,
-                        bookingService
-                );
-
-        app.start();
     }
 }

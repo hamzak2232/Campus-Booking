@@ -2,6 +2,7 @@ package com.campus.booking.app;
 
 import com.campus.booking.domain.Booking;
 import com.campus.booking.domain.Room;
+import com.campus.booking.domain.RoomType;
 import com.campus.booking.domain.Student;
 import com.campus.booking.service.BookingService;
 import com.campus.booking.service.RoomService;
@@ -72,12 +73,12 @@ public class CampusBookingApp {
         // -----------------------------
         boolean room1Exists = roomService.getRoomById(1).isPresent();
         if (!room1Exists) {
-            roomService.addRoom(new Room(1, "Lab A", "Computer Lab"));
+            roomService.addRoom(new Room(1, "Lab A", RoomType.LAB));
         }
 
         boolean room2Exists = roomService.getRoomById(2).isPresent();
         if (!room2Exists) {
-            roomService.addRoom(new Room(2, "Meeting Room 1", "Meeting Room"));
+            roomService.addRoom(new Room(2, "Meeting Room 1", RoomType.MEETING_ROOM));
         }
     }
 

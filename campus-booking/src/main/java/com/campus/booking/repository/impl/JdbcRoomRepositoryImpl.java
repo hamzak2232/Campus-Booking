@@ -1,6 +1,7 @@
 package com.campus.booking.repository.impl;
 
 import com.campus.booking.domain.Room;
+import com.campus.booking.domain.RoomType;
 import com.campus.booking.repository.RoomRepository;
 import com.campus.booking.util.DbConnectionUtil;
 
@@ -23,7 +24,7 @@ public class JdbcRoomRepositoryImpl implements RoomRepository {
 
             pstmt.setInt(1, room.getId());
             pstmt.setString(2, room.getName());
-            pstmt.setString(3, room.getType());
+            pstmt.setString(3, room.getType().name());
             pstmt.setBoolean(4, room.isAvailable());
 
             pstmt.executeUpdate();
@@ -79,7 +80,7 @@ public class JdbcRoomRepositoryImpl implements RoomRepository {
         String type = rs.getString("type");
         boolean available = rs.getBoolean("available");
 
-        Room room = new Room(id, name, type);
+        Room room = new Room(id, name, RoomType.valueOf(type));
         room.setAvailable(available);
 
         return room;

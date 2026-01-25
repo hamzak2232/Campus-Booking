@@ -3,10 +3,10 @@ package com.campus.booking.domain;
 public class Room {
     private final int id;          // unique room id
     private final String name;
-    private final String type;     // e.g., Lab, Meeting Room
+    private final RoomType type;     // e.g., Lab, Meeting Room
     private boolean available;     // can be updated by service
 
-    public Room(int id, String name, String type) {
+    public Room(int id, String name, RoomType type) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -15,7 +15,7 @@ public class Room {
 
     public int getId() { return id; }
     public String getName() { return name; }
-    public String getType() { return type; }
+    public RoomType getType() { return type; }
     public boolean isAvailable() { return available; }
     public void setAvailable(boolean available) { this.available = available; }
 

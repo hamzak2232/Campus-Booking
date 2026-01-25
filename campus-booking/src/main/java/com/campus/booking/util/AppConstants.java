@@ -1,4 +1,8 @@
 package com.campus.booking.util;
 
-public class AppConstants {
+public final class AppConstants {
+
+    private AppConstants() {}
+
+    public static final String APP_NAME = "Campus Booking System";
 }

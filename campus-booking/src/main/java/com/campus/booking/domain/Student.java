@@ -1,25 +1,54 @@
 package com.campus.booking.domain;
 
-public class Student {
-    private final String id;       // unique student id
-    private final String name;
-    private final String email;
-    private final boolean admin;   // optional: admin privileges
+import jakarta.persistence.*;
 
-    public Student(String id, String name, String email, boolean admin) {
-        this.id = id;
+@Entity
+@Table(
+        name = "students",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "student_id"),
+                @UniqueConstraint(columnNames = "email")
+        }
+)
+public class Student {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private  Integer id;       // unique student id
+
+    @Column(name = "student_id", nullable = false)
+    private String studentId; // university student ID
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "admin", nullable = false)
+    private boolean admin;
+
+    protected Student() {}
+
+    public Student(String studentId, String name, String email, boolean admin) {
+        this.studentId = studentId;
         this.name = name;
         this.email = email;
         this.admin = admin;
     }
 
-    public String getId() { return id; }
+    public Integer getId() { return id; }
+    public String getStudentId() { return studentId; }
     public String getName() { return name; }
     public String getEmail() { return email; }
     public boolean isAdmin() { return admin; }
 
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
     @Override
     public String toString() {
-        return name + " (" + id + ")";
+        return studentId + " - " + name + (admin ? " (Admin)" : "");
     }
 }

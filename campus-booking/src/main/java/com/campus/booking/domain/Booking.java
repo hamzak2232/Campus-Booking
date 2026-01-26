@@ -1,27 +1,36 @@
 package com.campus.booking.domain;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(of = {"id", "student", "room", "timestamp"})
+@Entity
+@Table(name = "bookings")
 public class Booking {
-    private final int id;           // auto-generated
-    private final Student student;
-    private final Room room;
-    private final LocalDateTime timestamp;
 
-    public Booking(int id, Student student, Room room) {
-        this.id = id;
-        this.student = student;
-        this.room = room;
-        this.timestamp = LocalDateTime.now();  // booking time
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    public int getId() { return id; }
-    public Student getStudent() { return student; }
-    public Room getRoom() { return room; }
-    public LocalDateTime getTimestamp() { return timestamp; }
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
 
-    @Override
-    public String toString() {
-        return "Booking #" + id + ": " + student + " -> " + room + " at " + timestamp;
-    }
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
+
+    @Column(name = "booking_date", nullable = false)
+    private LocalDateTime timestamp;
+
 }

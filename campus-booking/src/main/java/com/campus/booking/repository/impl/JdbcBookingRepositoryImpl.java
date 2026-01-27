@@ -50,7 +50,7 @@ public class JdbcBookingRepositoryImpl implements BookingRepository {
                 "s.student_id, s.name as student_name, s.email as student_email, s.admin as student_admin, " +
                 "r.id as room_id, r.room_code, r.type, r.available " +
                 "FROM bookings b " +
-                "JOIN students s ON b.student_id = s.student_id " +   // ✅ FIXED
+                "JOIN students s ON b.student_id = s.student_id " +
                 "JOIN rooms r ON b.room_id = r.id " +
                 "WHERE b.id = ?";
 
@@ -80,7 +80,7 @@ public class JdbcBookingRepositoryImpl implements BookingRepository {
                 "s.student_id, s.name as student_name, s.email as student_email, s.admin as student_admin, " +
                 "r.id as room_id, r.room_code, r.type, r.available " +
                 "FROM bookings b " +
-                "JOIN students s ON b.student_id = s.student_id " +   // ✅ FIXED
+                "JOIN students s ON b.student_id = s.student_id " +
                 "JOIN rooms r ON b.room_id = r.id";
 
         try (Connection conn = DbConnectionUtil.getConnection();

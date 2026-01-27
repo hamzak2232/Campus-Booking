@@ -1,20 +1,17 @@
 package com.campus.booking.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import jakarta.validation.constraints.Size;
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString(
-        of = {"studentId", "name", "admin"},
-        includeFieldNames = false
-)
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA
+@ToString(of = {"studentId", "name", "role"})
 @Entity
 @Table(
         name = "students",
@@ -27,17 +24,35 @@ public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;       // unique student id
+    private Integer id;
 
-    @Column(name = "student_id", nullable = false)
-    private String studentId; // university student ID
+    @NotBlank(message = "Student ID is required")
+    @Column(name = "student_id", nullable = false, updatable = false)
+    private String studentId;
 
-    @Column(name = "name", nullable = false)
+    @NotBlank(message = "Student name is required")
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "email", nullable = false)
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
+    @Column(nullable = false)
     private String email;
 
-    @Column(name = "admin", nullable = false)
-    private boolean admin;
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    public Student(String studentId, String name, String email, String password, Role role) {
+        this.studentId = studentId;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 }

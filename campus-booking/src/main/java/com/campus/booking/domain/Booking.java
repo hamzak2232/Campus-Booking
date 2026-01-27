@@ -1,18 +1,17 @@
 package com.campus.booking.domain;
 
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "student", "room", "timestamp"})
 @Entity
 @Table(name = "bookings")
@@ -22,15 +21,23 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(optional = false)
+    @NotNull(message = "Booking must have a student")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @ManyToOne(optional = false)
+    @NotNull(message = "Booking must have a room")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
-    @Column(name = "booking_date", nullable = false)
+    @NotNull(message = "Booking date is required")
+    @Column(name = "booking_date", nullable = false, updatable = false)
     private LocalDateTime timestamp;
 
+    public Booking(Student student, Room room) {
+        this.student = student;
+        this.room = room;
+        this.timestamp = LocalDateTime.now();
+    }
 }

@@ -1,11 +1,11 @@
 package com.campus.booking.repository;
 
 import com.campus.booking.domain.Room;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface RoomRepository {
-    void save(Room room);
-    Optional<Room> findById(int id);
-    List<Room> findAll();
+@Repository
+public interface RoomRepository extends JpaRepository<Room, Integer> {
+
 }
+

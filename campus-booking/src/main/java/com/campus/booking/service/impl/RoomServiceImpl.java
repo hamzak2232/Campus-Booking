@@ -3,10 +3,14 @@ package com.campus.booking.service.impl;
 import com.campus.booking.domain.Room;
 import com.campus.booking.repository.RoomRepository;
 import com.campus.booking.service.RoomService;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@Transactional
 public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
@@ -16,15 +20,12 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void addRoom(Room room) {
-        if (room == null) {
-            throw new IllegalArgumentException("Room cannot be null");
-        }
-        roomRepository.save(room);
+    public Room addRoom(Room room) {
+        return roomRepository.save(room);
     }
 
     @Override
-    public Optional<Room> getRoomById(int id) {
+    public Optional<Room> getRoomById(Integer id) {
         return roomRepository.findById(id);
     }
 

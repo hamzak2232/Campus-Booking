@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoomService {
-    void addRoom(Room room);
-    Optional<Room> getRoomById(int id);
+
+    Room addRoom(Room room);
+
+    Optional<Room> getRoomById(Integer id);
+
     List<Room> getAllRooms();
 }

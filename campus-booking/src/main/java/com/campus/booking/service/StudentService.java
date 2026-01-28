@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface StudentService {
     void registerStudent(Student student);
-    Optional<Student> getStudentById(String id);
+    Optional<Student> getStudentById(String id);   // this means studentId
     List<Student> getAllStudents();
 }

@@ -21,10 +21,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String studentId) throws UsernameNotFoundException {
+
         Student student = studentService.getStudentById(studentId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(student.getRole().name()));
+        List<GrantedAuthority> authorities =
+                List.of(new SimpleGrantedAuthority("ROLE_" + student.getRole().name()));
 
         return new org.springframework.security.core.userdetails.User(
                 student.getStudentId(),

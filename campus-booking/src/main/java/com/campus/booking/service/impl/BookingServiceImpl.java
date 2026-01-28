@@ -7,18 +7,19 @@ import com.campus.booking.repository.BookingRepository;
 import com.campus.booking.repository.RoomRepository;
 import com.campus.booking.repository.StudentRepository;
 import com.campus.booking.service.BookingService;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.List;
+import java.util.Optional;
 
+@Service
+@Transactional
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final StudentRepository studentRepository;
     private final RoomRepository roomRepository;
-
-    private final AtomicInteger bookingIdGenerator = new AtomicInteger(1);
 
     public BookingServiceImpl(
             BookingRepository bookingRepository,
@@ -31,9 +32,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking createBooking(String studentId, int roomId) {
+    public Booking createBooking(String studentId, Integer roomId) {
 
-        Student student = studentRepository.findById(studentId)
+        Student student = studentRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found"));
 
         Room room = roomRepository.findById(roomId)
@@ -43,20 +44,16 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalStateException("Room is already booked");
         }
 
-        room.setAvailable(false);
+        // Domain-driven way
+        room.markUnavailable();
 
-        Booking booking = new Booking(
-                bookingIdGenerator.getAndIncrement(),
-                student,
-                room
-        );
+        Booking booking = new Booking(student, room);
 
-        bookingRepository.save(booking);
-        return booking;
+        return bookingRepository.save(booking);
     }
 
     @Override
-    public Optional<Booking> getBookingById(int id) {
+    public Optional<Booking> getBookingById(Integer id) {
         return bookingRepository.findById(id);
     }
 

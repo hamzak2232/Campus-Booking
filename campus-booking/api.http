@@ -1,0 +1,54 @@
+```http
+### Get all students
+GET http://localhost:8080/api/students
+Accept: application/json
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
+
+### Get student by ID
+GET http://localhost:8080/api/students/5
+Accept: application/json
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
+
+### Create a student
+POST http://localhost:8080/api/students
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
+
+{
+  "studentId": "s3",
+  "name": "Ali",
+  "email": "ali@campus.com",
+  "password": "password123",
+  "role": "STUDENT"
+}
+
+### Get all rooms
+GET http://localhost:8080/api/rooms
+Accept: application/json
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
+
+### Create a room
+POST http://localhost:8080/api/rooms
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
+
+{
+  "roomNumber": "R101",
+  "type": "MEETING_ROOM",
+  "capacity": 30
+}
+
+### Get all bookings
+GET http://localhost:8080/api/bookings
+Accept: application/json
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
+
+### Create a booking
+POST http://localhost:8080/api/bookings
+Content-Type: application/json
+Authorization: Basic YWRtaW46YWRtaW4xMjM=
+
+{
+  "studentId": 5,
+  "roomId": 1
+}

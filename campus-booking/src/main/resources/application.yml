@@ -3,6 +3,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/campus_booking
     username: postgres
     password: onemoretry111
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -10,3 +11,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  security:
+    user:
+      name: admin
+      password: admin
+      roles: ADMIN

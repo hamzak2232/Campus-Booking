@@ -18,13 +18,13 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    // GET all students
+    // GET /api/students
     @GetMapping
     public List<Student> getAllStudents() {
         return studentService.getAllStudents();
     }
 
-    // GET student by studentId
+    // GET /api/students/{studentId}
     @GetMapping("/{studentId}")
     public ResponseEntity<Student> getStudent(@PathVariable String studentId) {
         return studentService.getStudentById(studentId)
@@ -32,7 +32,7 @@ public class StudentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST new student
+    // POST /api/students
     @PostMapping
     public ResponseEntity<Student> registerStudent(@RequestBody Student student) {
         studentService.registerStudent(student);

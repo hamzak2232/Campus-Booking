@@ -18,13 +18,13 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
-    // GET all bookings
+    // GET /api/bookings
     @GetMapping
     public List<Booking> getAllBookings() {
         return bookingService.getAllBookings();
     }
 
-    // GET booking by id
+    // GET /api/bookings/{id}
     @GetMapping("/{id}")
     public ResponseEntity<Booking> getBooking(@PathVariable Integer id) {
         return bookingService.getBookingById(id)
@@ -32,7 +32,7 @@ public class BookingController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST create booking
+    // POST /api/bookings?studentId=S1&roomId=1
     @PostMapping
     public ResponseEntity<?> createBooking(
             @RequestParam String studentId,

@@ -18,13 +18,13 @@ public class RoomController {
         this.roomService = roomService;
     }
 
-    // GET all rooms
+    // GET /api/rooms
     @GetMapping
     public List<Room> getAllRooms() {
         return roomService.getAllRooms();
     }
 
-    // GET room by id
+    // GET /api/rooms/{id}
     @GetMapping("/{id}")
     public ResponseEntity<Room> getRoom(@PathVariable Integer id) {
         return roomService.getRoomById(id)
@@ -32,7 +32,7 @@ public class RoomController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST new room
+    // POST /api/rooms
     @PostMapping
     public ResponseEntity<Room> addRoom(@RequestBody Room room) {
         Room saved = roomService.addRoom(room);

@@ -34,10 +34,7 @@ public class BookingController {
 
     // POST /api/bookings?studentId=S1&roomId=1
     @PostMapping
-    public ResponseEntity<?> createBooking(
-            @RequestParam String studentId,
-            @RequestParam Integer roomId
-    ) {
+    public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequestDTO request) {
         try {
             Booking booking = bookingService.createBooking(studentId, roomId);
             return ResponseEntity.status(HttpStatus.CREATED).body(booking);

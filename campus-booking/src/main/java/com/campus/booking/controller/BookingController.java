@@ -36,7 +36,10 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequestDTO request) {
         try {
-            Booking booking = bookingService.createBooking(studentId, roomId);
+            Booking booking = bookingService.createBooking(
+                    request.getStudentId(),
+                    request.getRoomId()
+            );
             return ResponseEntity.status(HttpStatus.CREATED).body(booking);
         } catch (IllegalStateException | IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

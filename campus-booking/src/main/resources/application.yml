@@ -6,7 +6,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: validate       # production-safe
     show-sql: true
     properties:
       hibernate:

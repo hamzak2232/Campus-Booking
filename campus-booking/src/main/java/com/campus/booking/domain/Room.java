@@ -3,14 +3,12 @@ package com.campus.booking.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"roomCode", "type", "available"})
+@EqualsAndHashCode(of = "roomCode")
 @Entity
 @Table(name = "rooms")
 public class Room {

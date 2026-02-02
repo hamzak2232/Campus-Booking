@@ -3,16 +3,14 @@ package com.campus.booking.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "student", "room", "timestamp"})
+@EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "bookings")
 public class Booking {

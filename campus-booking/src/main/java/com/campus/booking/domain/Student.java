@@ -4,14 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import jakarta.validation.constraints.Size;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA
 @ToString(of = {"studentId", "name", "role"})
+@EqualsAndHashCode(of = "studentId")
 @Entity
 @Table(
         name = "students",

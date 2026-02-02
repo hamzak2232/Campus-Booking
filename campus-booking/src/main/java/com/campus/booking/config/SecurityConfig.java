@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/students/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/students/**").hasAuthority("ADMIN") 
                         .requestMatchers("/api/rooms/**").hasAnyAuthority("ADMIN", "STUDENT")
                         .requestMatchers("/api/bookings/**").hasAnyAuthority("ADMIN", "STUDENT")
                         .anyRequest().permitAll()

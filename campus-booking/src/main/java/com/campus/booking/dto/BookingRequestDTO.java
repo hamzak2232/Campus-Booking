@@ -13,9 +13,6 @@ import lombok.ToString;
 @ToString
 public class BookingRequestDTO {
 
-    @NotBlank(message = "Student ID is required")
-    private String studentId;
-
     @NotNull(message = "Room ID is required")
     private Integer roomId;
 }

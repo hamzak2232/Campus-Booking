@@ -6,6 +6,8 @@ import com.campus.booking.dto.BookingRequestDTO;
 import com.campus.booking.service.BookingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -43,15 +45,31 @@ public class BookingController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST /api/bookings?studentId=S1&roomId=1
+    // POST /api/bookings
     @PostMapping
     public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequestDTO request) {
         try {
-            Booking booking = bookingService.createBooking(
-                    request.getStudentId(),
-                    request.getRoomId()
+            // Get authenticated student from JWT
+            UserDetails user = (UserDetails) SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            // Create booking
+            Booking booking = bookingService.createBooking(user.getUsername(), request.getRoomId());
+
+            // Convert to DTO before returning
+            BookingDTO bookingDTO = new BookingDTO(
+                    booking.getId(),
+                    booking.getStudent().getStudentId(),
+                    booking.getStudent().getName(),
+                    booking.getRoom().getRoomCode(),
+                    booking.getRoom().getType().toString(),
+                    booking.getTimestamp()
             );
-            return ResponseEntity.status(HttpStatus.CREATED).body(booking);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(bookingDTO);
+
         } catch (IllegalStateException | IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

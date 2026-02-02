@@ -1,6 +1,7 @@
 package com.campus.booking.controller;
 
 import com.campus.booking.domain.Booking;
+import com.campus.booking.dto.BookingDTO;
 import com.campus.booking.dto.BookingRequestDTO;
 import com.campus.booking.service.BookingService;
 import org.springframework.http.HttpStatus;
@@ -22,14 +23,22 @@ public class BookingController {
 
     // GET /api/bookings
     @GetMapping
-    public List<Booking> getAllBookings() {
-        return bookingService.getAllBookings();
+    public List<BookingDTO> getAllBookings() {
+        return bookingService.getAllBookingDTOs();
     }
 
     // GET /api/bookings/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Booking> getBooking(@PathVariable Integer id) {
+    public ResponseEntity<BookingDTO> getBooking(@PathVariable Integer id) {
         return bookingService.getBookingById(id)
+                .map(b -> new BookingDTO(
+                        b.getId(),
+                        b.getStudent().getStudentId(),
+                        b.getStudent().getName(),
+                        b.getRoom().getRoomCode(),
+                        b.getRoom().getType().toString(),
+                        b.getTimestamp()
+                ))
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

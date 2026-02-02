@@ -1,35 +1,33 @@
 package com.campus.booking.config;
 
-import com.campus.booking.service.impl.StudentServiceImpl;
+import com.campus.booking.security.JwtAuthenticationFilter;
 import com.campus.booking.service.impl.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
-
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
+    private final JwtAuthenticationFilter jwtFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Tell Spring how to load users
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -44,21 +42,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/students/**").hasAuthority("ADMIN") 
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/students/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/rooms/**").hasAnyAuthority("ADMIN", "STUDENT")
                         .requestMatchers("/api/bookings/**").hasAnyAuthority("ADMIN", "STUDENT")
-                        .anyRequest().permitAll()
-                )
-                .httpBasic(withDefaults())
-                .formLogin(withDefaults());
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
     }
 }
-

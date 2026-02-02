@@ -28,31 +28,34 @@ public class CampusBookingApplication {
     ) {
         return args -> {
 
-            if (repo.findByStudentId("admin").isEmpty()) {
-                repo.save(new Student(
-                        "admin",
-                        "System Admin",
-                        "admin@campus.com",
-                        encoder.encode("admin123"),
-                        Role.ADMIN
-                ));
-            }
+            repo.findByStudentId("admin")
+                    .or(() -> repo.findByEmail("admin@campus.com"))
+                    .orElseGet(() -> repo.save(new Student(
+                            "admin",
+                            "System Admin",
+                            "admin@campus.com",
+                            encoder.encode("admin123"),
+                            Role.ADMIN
+                    )));
 
-            if (repo.findByStudentId("s1").isEmpty()) {
-                repo.save(new Student(
-                        "s1",
-                        "Hamza",
-                        "hamza@campus.com",
-                        encoder.encode("student123"),
-                        Role.STUDENT
-                ));
-            }
 
-            if (roomService.getRoomById(1).isEmpty()) {
+            repo.findByStudentId("s1")
+                    .or(() -> repo.findByEmail("hamza@campus.com"))
+                    .orElseGet(() -> repo.save(new Student(
+                            "s1",
+                            "Hamza",
+                            "hamza@campus.com",
+                            encoder.encode("student123"),
+                            Role.STUDENT
+                    )));
+
+
+            // Rooms
+            if (roomService.getAllRooms().stream().noneMatch(r -> r.getRoomCode().equals("Lab A"))) {
                 roomService.addRoom(new Room("Lab A", RoomType.LAB));
             }
 
-            if (roomService.getRoomById(2).isEmpty()) {
+            if (roomService.getAllRooms().stream().noneMatch(r -> r.getRoomCode().equals("Meeting Room"))) {
                 roomService.addRoom(new Room("Meeting Room", RoomType.MEETING_ROOM));
             }
         };

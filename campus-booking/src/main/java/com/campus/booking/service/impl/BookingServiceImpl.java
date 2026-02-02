@@ -3,6 +3,7 @@ package com.campus.booking.service.impl;
 import com.campus.booking.domain.Booking;
 import com.campus.booking.domain.Room;
 import com.campus.booking.domain.Student;
+import com.campus.booking.dto.BookingDTO;
 import com.campus.booking.repository.BookingRepository;
 import com.campus.booking.repository.RoomRepository;
 import com.campus.booking.repository.StudentRepository;
@@ -57,8 +58,22 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findById(id);
     }
 
+//    @Override
+//    public List<Booking> getAllBookings() {
+//        return bookingRepository.findAll();
+//    }
+
     @Override
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+    public List<BookingDTO> getAllBookingDTOs() {
+        return bookingRepository.findAll().stream()
+                .map(b -> new BookingDTO(
+                        b.getId(),
+                        b.getStudent().getStudentId(),
+                        b.getStudent().getName(),
+                        b.getRoom().getRoomCode(),
+                        b.getRoom().getType().toString(),
+                        b.getTimestamp()
+                ))
+                .toList();
     }
 }

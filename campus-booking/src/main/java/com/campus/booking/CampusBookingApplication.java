@@ -52,11 +52,11 @@ public class CampusBookingApplication {
 
             // Rooms
             if (roomService.getAllRooms().stream().noneMatch(r -> r.getRoomCode().equals("Lab A"))) {
-                roomService.addRoom(new Room("Lab A", RoomType.LAB));
+                roomService.addRoom(new Room("Lab A", 40,  RoomType.LAB));
             }
 
             if (roomService.getAllRooms().stream().noneMatch(r -> r.getRoomCode().equals("Meeting Room"))) {
-                roomService.addRoom(new Room("Meeting Room", RoomType.MEETING_ROOM));
+                roomService.addRoom(new Room("Meeting Room", 50,  RoomType.MEETING_ROOM));
             }
         };
     }

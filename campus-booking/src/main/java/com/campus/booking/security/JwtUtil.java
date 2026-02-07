@@ -3,23 +3,28 @@ package com.campus.booking.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "campus-secret-key";
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    private static final String SECRET = "campus-booking-super-secret-key-123456";
+    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+
+    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
     public String generateToken(UserDetails user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -28,13 +33,14 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, UserDetails user) {
-        return extractUsername(token).equals(user.getUsername()) &&
-                !getClaims(token).getExpiration().before(new Date());
+        return extractUsername(token).equals(user.getUsername())
+                && !getClaims(token).getExpiration().before(new Date());
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET)
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }

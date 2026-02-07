@@ -5,6 +5,7 @@ spring:
     password: onemoretry111
 
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update         # lets dev iteration work on same DB
     show-sql: true

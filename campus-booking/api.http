@@ -1,18 +1,28 @@
 ```http
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "studentId": "admin",
+  "password": "admin123"
+}
+
 ### Get all students
-GET http://localhost:8080/api/students
+GET {{baseUrl}}/students
 Accept: application/json
-Authorization: Basic YWRtaW46YWRtaW4xMjM=
+Authorization: Bearer {{token}}
 
 ### Get student by ID
-GET http://localhost:8080/api/students/5
+GET {{baseUrl}}//students/s3
 Accept: application/json
-Authorization: Basic YWRtaW46YWRtaW4xMjM=
+Authorization: Bearer {{token}}
 
 ### Create a student
-POST http://localhost:8080/api/students
+POST {{baseUrl}}/students
 Content-Type: application/json
-Authorization: Basic YWRtaW46YWRtaW4xMjM=
+Authorization: Bearer {{token}}
 
 {
   "studentId": "s3",
@@ -23,14 +33,14 @@ Authorization: Basic YWRtaW46YWRtaW4xMjM=
 }
 
 ### Get all rooms
-GET http://localhost:8080/api/rooms
+GET {{baseUrl}}/rooms
 Accept: application/json
-Authorization: Basic YWRtaW46YWRtaW4xMjM=
+Authorization: Bearer {{token}}
 
 ### Create a room
-POST http://localhost:8080/api/rooms
+POST {{baseUrl}}/rooms
 Content-Type: application/json
-Authorization: Basic YWRtaW46YWRtaW4xMjM=
+Authorization: Bearer {{token}}
 
 {
   "roomNumber": "R101",
@@ -39,14 +49,14 @@ Authorization: Basic YWRtaW46YWRtaW4xMjM=
 }
 
 ### Get all bookings
-GET http://localhost:8080/api/bookings
+GET {{baseUrl}}/bookings
 Accept: application/json
-Authorization: Basic YWRtaW46YWRtaW4xMjM=
+Authorization: Bearer {{token}}
 
 ### Create a booking
-POST http://localhost:8080/api/bookings
+POST {{baseUrl}}/bookings
 Content-Type: application/json
-Authorization: Basic YWRtaW46YWRtaW4xMjM=
+Authorization: Bearer {{token}}
 
 {
   "studentId": 5,

@@ -66,14 +66,24 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDTO> getAllBookingDTOs() {
         return bookingRepository.findAll().stream()
-                .map(b -> new BookingDTO(
-                        b.getId(),
-                        b.getStudent().getStudentId(),
-                        b.getStudent().getName(),
-                        b.getRoom().getRoomCode(),
-                        b.getRoom().getType().toString(),
-                        b.getTimestamp()
-                ))
+                .map(b -> {
+                    String studentId = b.getStudent() != null ? b.getStudent().getStudentId() : "Unknown";
+                    String studentName = b.getStudent() != null ? b.getStudent().getName() : "Unknown";
+
+                    String roomCode = b.getRoom() != null ? b.getRoom().getRoomCode() : "Unknown";
+                    String roomType = b.getRoom() != null && b.getRoom().getType() != null
+                            ? b.getRoom().getType().toString()
+                            : "Unknown";
+
+                    return new BookingDTO(
+                            b.getId(),
+                            studentId,
+                            studentName,
+                            roomCode,
+                            roomType,
+                            b.getTimestamp()
+                    );
+                })
                 .toList();
     }
 }

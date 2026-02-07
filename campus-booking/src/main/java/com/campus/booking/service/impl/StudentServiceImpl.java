@@ -1,6 +1,7 @@
 package com.campus.booking.service.impl;
 
 import com.campus.booking.domain.Student;
+import com.campus.booking.dto.StudentDTO;
 import com.campus.booking.repository.StudentRepository;
 import com.campus.booking.service.StudentService;
 import jakarta.transaction.Transactional;
@@ -35,5 +36,15 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
+    }
+
+    @Override
+    public StudentDTO toDTO(Student student){
+        return new StudentDTO(
+                student.getStudentId(),
+                student.getName(),
+                student.getEmail(),
+                student.getRole()
+        );
     }
 }

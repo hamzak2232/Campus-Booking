@@ -4,12 +4,15 @@ import com.campus.booking.domain.Booking;
 import com.campus.booking.dto.BookingDTO;
 import com.campus.booking.dto.BookingRequestDTO;
 import com.campus.booking.service.BookingService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -25,8 +28,12 @@ public class BookingController {
 
     // GET /api/bookings
     @GetMapping
-    public List<BookingDTO> getAllBookings() {
-        return bookingService.getAllBookingDTOs();
+    public Page<BookingDTO> getAllBookings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return bookingService.getAllBookingDTOs(pageable);
     }
 
     // GET /api/bookings/{id}

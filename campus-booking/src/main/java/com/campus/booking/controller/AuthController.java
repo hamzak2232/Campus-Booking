@@ -1,6 +1,8 @@
 package com.campus.booking.controller;
 
 import com.campus.booking.security.JwtUtil;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,5 +41,8 @@ public class AuthController {
         return jwtUtil.generateToken(userDetails);
     }
 
-    public record LoginRequest(String studentId, String password) {}
+    public record LoginRequest(
+            @NotBlank String studentId,
+            @NotBlank String password
+    ) {}
 }

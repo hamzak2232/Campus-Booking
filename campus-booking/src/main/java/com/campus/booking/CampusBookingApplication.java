@@ -7,14 +7,23 @@ import com.campus.booking.domain.Student;
 import com.campus.booking.repository.StudentRepository;
 import com.campus.booking.service.RoomService;
 import com.campus.booking.service.StudentService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class CampusBookingApplication {
+
+    @Value("${ADMIN_SEED_PASSWORD}")
+    private String adminPassword;
+
+    @Value("${STUDENT_SEED_PASSWORD}")
+    private String studentPassword;
+
 
     public static void main(String[] args) {
         SpringApplication.run(CampusBookingApplication.class, args);
@@ -34,7 +43,7 @@ public class CampusBookingApplication {
                             "admin",
                             "System Admin",
                             "admin@campus.com",
-                            encoder.encode("admin123"),
+                            encoder.encode(adminPassword),
                             Role.ADMIN
                     )));
 
@@ -45,18 +54,28 @@ public class CampusBookingApplication {
                             "s1",
                             "Hamza",
                             "hamza@campus.com",
-                            encoder.encode("student123"),
+                            encoder.encode(studentPassword),
                             Role.STUDENT
                     )));
 
 
-            // Rooms
-            if (roomService.getAllRooms().stream().noneMatch(r -> r.getRoomCode().equals("Lab A"))) {
-                roomService.addRoom(new Room("Lab A", 40,  RoomType.LAB));
+            // Rooms (with pagination-safe fetch)
+            int page = 0;
+            int size = 50; // large enough to check existing rooms
+            boolean labExists = roomService.getAllRooms(PageRequest.of(page, size))
+                    .stream()
+                    .anyMatch(r -> r.getRoomCode().equals("Lab A"));
+
+            if (!labExists) {
+                roomService.addRoom(new Room("Lab A", 40, RoomType.LAB));
             }
 
-            if (roomService.getAllRooms().stream().noneMatch(r -> r.getRoomCode().equals("Meeting Room"))) {
-                roomService.addRoom(new Room("Meeting Room", 50,  RoomType.MEETING_ROOM));
+            boolean meetingExists = roomService.getAllRooms(PageRequest.of(page, size))
+                    .stream()
+                    .anyMatch(r -> r.getRoomCode().equals("Meeting Room"));
+
+            if (!meetingExists) {
+                roomService.addRoom(new Room("Meeting Room", 50, RoomType.MEETING_ROOM));
             }
         };
     }

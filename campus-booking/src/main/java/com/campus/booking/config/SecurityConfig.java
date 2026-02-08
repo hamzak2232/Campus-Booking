@@ -55,12 +55,31 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/students/**").hasAuthority("ADMIN")
-                        .requestMatchers("/api/rooms/**").hasAnyAuthority("ADMIN", "STUDENT")
-                        .requestMatchers("/api/bookings/**").hasAnyAuthority("ADMIN", "STUDENT")
-                        .anyRequest().authenticated()
+
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src 'self'; frame-ancestors 'none'; script-src 'self'; object-src 'none'")
+                        )
+                        .frameOptions(frame -> frame.deny())
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)
+                        )
+                        .xssProtection(xss -> xss.disable())
+                        .contentTypeOptions(cto -> cto.disable())
+                        .referrerPolicy(ref -> ref
+                                .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)
+                        )
+                )
+
+                        .authorizeHttpRequests(auth -> auth
+                                .requestMatchers("/actuator/**").hasAuthority("ADMIN")
+
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/students/**").hasAuthority("ADMIN")
+                                .requestMatchers("/api/rooms/**").hasAnyAuthority("ADMIN", "STUDENT")
+                                .requestMatchers("/api/bookings/**").hasAnyAuthority("ADMIN", "STUDENT")
+                                .anyRequest().authenticated()
                 );
 
         return http.build();

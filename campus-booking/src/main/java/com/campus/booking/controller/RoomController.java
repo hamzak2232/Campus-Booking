@@ -1,7 +1,12 @@
 package com.campus.booking.controller;
 
 import com.campus.booking.domain.Room;
+import com.campus.booking.dto.RoomCreateDTO;
 import com.campus.booking.service.RoomService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +25,12 @@ public class RoomController {
 
     // GET /api/rooms
     @GetMapping
-    public List<Room> getAllRooms() {
-        return roomService.getAllRooms();
+    public Page<Room> getAllRooms(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return roomService.getAllRooms(pageable);
     }
 
     // GET /api/rooms/{id}
@@ -34,8 +43,18 @@ public class RoomController {
 
     // POST /api/rooms
     @PostMapping
-    public ResponseEntity<Room> addRoom(@RequestBody Room room) {
+    public ResponseEntity<Room> addRoom(@Valid @RequestBody RoomCreateDTO dto) {
+        Room room = new Room(
+                dto.roomCode(),
+                dto.capacity(),
+                dto.type()
+        );
+
         Room saved = roomService.addRoom(room);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .header("Location", "/api/rooms/" + saved.getId())
+                .body(saved);
     }
 }

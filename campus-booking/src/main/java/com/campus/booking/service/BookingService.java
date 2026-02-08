@@ -2,6 +2,8 @@ package com.campus.booking.service;
 
 import com.campus.booking.domain.Booking;
 import com.campus.booking.dto.BookingDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,5 +16,5 @@ public interface BookingService {
 
 //    List<Booking> getAllBookings();
 
-    List<BookingDTO> getAllBookingDTOs();
+    Page<BookingDTO> getAllBookingDTOs(Pageable pageable);
 }

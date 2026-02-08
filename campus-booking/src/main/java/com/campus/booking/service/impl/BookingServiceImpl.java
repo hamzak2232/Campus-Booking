@@ -9,6 +9,8 @@ import com.campus.booking.repository.RoomRepository;
 import com.campus.booking.repository.StudentRepository;
 import com.campus.booking.service.BookingService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,26 +66,16 @@ public class BookingServiceImpl implements BookingService {
 //    }
 
     @Override
-    public List<BookingDTO> getAllBookingDTOs() {
-        return bookingRepository.findAll().stream()
-                .map(b -> {
-                    String studentId = b.getStudent() != null ? b.getStudent().getStudentId() : "Unknown";
-                    String studentName = b.getStudent() != null ? b.getStudent().getName() : "Unknown";
-
-                    String roomCode = b.getRoom() != null ? b.getRoom().getRoomCode() : "Unknown";
-                    String roomType = b.getRoom() != null && b.getRoom().getType() != null
-                            ? b.getRoom().getType().toString()
-                            : "Unknown";
-
-                    return new BookingDTO(
-                            b.getId(),
-                            studentId,
-                            studentName,
-                            roomCode,
-                            roomType,
-                            b.getTimestamp()
-                    );
-                })
-                .toList();
+    public Page<BookingDTO> getAllBookingDTOs(Pageable pageable) {
+        return bookingRepository.findAll(pageable)
+                .map(b -> new BookingDTO(
+                        b.getId(),
+                        b.getStudent() != null ? b.getStudent().getStudentId() : "Unknown",
+                        b.getStudent() != null ? b.getStudent().getName() : "Unknown",
+                        b.getRoom() != null ? b.getRoom().getRoomCode() : "Unknown",
+                        b.getRoom() != null && b.getRoom().getType() != null
+                                ? b.getRoom().getType().toString() : "Unknown",
+                        b.getTimestamp()
+                ));
     }
 }

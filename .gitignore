@@ -1,3 +1,4 @@
+### Spring Boot ###
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -35,5 +36,17 @@ build/
 ### VS Code ###
 .vscode/
 
-### Mac OS ###
+### OS files ###
 .DS_Store
+Thumbs.db
+
+### Logs ###
+*.log
+
+### Environment / secrets ###
+.env
+*.env
+application-*.yml
+
+### HTTP client secrets ###
+http-client.private.env.json

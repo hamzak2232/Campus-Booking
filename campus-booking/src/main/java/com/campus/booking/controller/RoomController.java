@@ -44,6 +44,11 @@ public class RoomController {
     // POST /api/rooms
     @PostMapping
     public ResponseEntity<Room> addRoom(@Valid @RequestBody RoomCreateDTO dto) {
+
+        roomService.getRoomByCode(dto.roomCode()).ifPresent(r -> {
+            throw new IllegalArgumentException("Room with this code already exists");
+        });
+
         Room room = new Room(
                 dto.roomCode(),
                 dto.capacity(),

@@ -47,6 +47,9 @@ public class StudentController {
     // POST /api/students
     @PostMapping
     public ResponseEntity<StudentDTO> registerStudent(@Valid @RequestBody StudentCreateDTO dto) {
+        studentService.getStudentById(dto.studentId()).ifPresent(existing -> {
+            throw new IllegalArgumentException("Student with ID already exists");
+        });
         Student savedStudent = studentService.registerStudent(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Location", "/api/students/" + savedStudent.getStudentId())

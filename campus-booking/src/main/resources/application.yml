@@ -19,6 +19,10 @@ spring:
       password: ${ADMIN_PASSWORD:}
       roles: ADMIN
 
+  messages:
+    basename: messages
+    encoding: UTF-8
+
 management:
   endpoints:
     web:

@@ -43,6 +43,10 @@ public class BookingServiceImpl implements BookingService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
 
+        bookingRepository.findByStudentAndRoom(student, room).ifPresent(b -> {
+            throw new IllegalStateException("Booking already exists for this student and room");
+        });
+
         if (!room.isAvailable()) {
             throw new IllegalStateException("Room is already booked");
         }

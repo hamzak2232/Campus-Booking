@@ -1,6 +1,7 @@
 package com.campus.booking.config;
 
 import com.campus.booking.security.JwtAuthenticationFilter;
+import com.campus.booking.security.JwtUtil;
 import com.campus.booking.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,11 +23,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import java.util.List;
 
 @Configuration
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl userDetailsService;
-    private final JwtAuthenticationFilter jwtFilter;
+//    private final UserDetailsServiceImpl userDetailsService;
+//    private final JwtAuthenticationFilter jwtFilter;
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(
+            JwtUtil jwtUtil,
+            UserDetailsServiceImpl userDetailsService
+    ) {
+        return new JwtAuthenticationFilter(jwtUtil, userDetailsService);
+    }
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -34,12 +44,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider(
+            UserDetailsServiceImpl userDetailsService,
+            PasswordEncoder passwordEncoder
+    ) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -47,14 +61,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // inject as method parameter
 
                 .headers(headers -> headers
                         .contentSecurityPolicy(csp -> csp
@@ -71,19 +83,18 @@ public class SecurityConfig {
                                 .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)
                         )
                 )
-
-                        .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/actuator/**").hasAuthority("ADMIN")
-
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/students/**").hasAuthority("ADMIN")
-                                .requestMatchers("/api/rooms/**").hasAnyAuthority("ADMIN", "STUDENT")
-                                .requestMatchers("/api/bookings/**").hasAnyAuthority("ADMIN", "STUDENT")
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/students/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/rooms/**").hasAnyAuthority("ADMIN", "STUDENT")
+                        .requestMatchers("/api/bookings/**").hasAnyAuthority("ADMIN", "STUDENT")
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

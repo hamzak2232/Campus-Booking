@@ -24,21 +24,21 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank(message = "Student ID is required")
+    @NotBlank(message = "{student.studentId.required}")
     @Column(name = "student_id", nullable = false, updatable = false)
     private String studentId;
 
-    @NotBlank(message = "Student name is required")
+    @NotBlank(message = "{student.name.required}")
     @Column(nullable = false)
     private String name;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
+    @NotBlank(message = "{student.email.required}")
+    @Email(message = "{student.email.invalid}")
     @Column(nullable = false)
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @NotBlank(message = "{student.password.required}")
+    @Size(min = 8, message = "{student.password.min}")
     @Column(nullable = false)
     private String password;
 

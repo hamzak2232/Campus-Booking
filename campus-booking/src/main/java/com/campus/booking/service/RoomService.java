@@ -14,4 +14,6 @@ public interface RoomService {
     Optional<Room> getRoomById(Integer id);
 
     Page<Room> getAllRooms(Pageable pageable);
+
+    Optional<Room> getRoomByCode(String roomCode);
 }

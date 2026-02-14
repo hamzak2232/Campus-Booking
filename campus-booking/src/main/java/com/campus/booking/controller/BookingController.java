@@ -78,7 +78,7 @@ public class BookingController {
             return ResponseEntity.status(HttpStatus.CREATED).body(bookingDTO);
 
         } catch (IllegalStateException | IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 }

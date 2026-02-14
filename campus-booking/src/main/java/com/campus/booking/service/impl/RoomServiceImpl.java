@@ -35,4 +35,10 @@ public class RoomServiceImpl implements RoomService {
     public Page<Room> getAllRooms(Pageable pageable) {
         return roomRepository.findAll(pageable);
     }
+
+    @Override
+    public Optional<Room> getRoomByCode(String roomCode) {
+        return roomRepository.findByRoomCode(roomCode);
+    }
+
 }

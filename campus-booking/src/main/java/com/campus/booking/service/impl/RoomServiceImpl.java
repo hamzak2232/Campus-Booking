@@ -3,7 +3,7 @@ package com.campus.booking.service.impl;
 import com.campus.booking.domain.Room;
 import com.campus.booking.repository.RoomRepository;
 import com.campus.booking.service.RoomService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,11 +27,13 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Room> getRoomById(Integer id) {
         return roomRepository.findById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Room> getAllRooms(Pageable pageable) {
         return roomRepository.findAll(pageable);
     }

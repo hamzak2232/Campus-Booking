@@ -2,18 +2,34 @@ package com.campus.booking.domain;
 
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "student", "room", "timestamp"})
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
+@SoftDelete(strategy = SoftDeleteType.DELETED, columnName = "is_deleted")
+@SQLDelete(sql = "UPDATE bookings SET is_deleted = true WHERE id = ?")
 @Entity
-@Table(name = "bookings")
-public class Booking {
+@Table(
+        name = "bookings",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"student_id", "room_id"})
+        },
+        indexes = {
+                @Index(name = "idx_bookings_student", columnList = "student_id"),
+                @Index(name = "idx_bookings_room", columnList = "room_id"),
+                @Index(name = "idx_bookings_student_room", columnList = "student_id, room_id")
+        }
+)
+public class Booking extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

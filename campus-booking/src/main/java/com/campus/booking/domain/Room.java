@@ -1,26 +1,37 @@
 package com.campus.booking.domain;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
+
+import org.hibernate.annotations.*;
+
 import org.hibernate.type.SqlTypes;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"roomCode", "type", "available"})
-@EqualsAndHashCode(of = "roomCode")
+@EqualsAndHashCode(of = "roomCode", callSuper = false)
+@SoftDelete(strategy = SoftDeleteType.DELETED, columnName = "is_deleted")
+@SQLDelete(sql = "UPDATE rooms SET is_deleted = true WHERE id = ?")
 @Entity
-@Table(name = "rooms")
-public class Room {
+@Table(
+        name = "rooms",
+        indexes = {
+                @Index(name = "idx_rooms_room_code", columnList = "room_code")
+        }
+)
+public class Room extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotBlank(message = "Room code is required")
-    @Column(name = "room_code", nullable = false, unique = true, updatable = false)
+    @Column(name = "room_code", nullable = false, unique = true, updatable = false, length = 50)
     private String roomCode;
 
     @NotNull(message = "Room type is required")
@@ -30,7 +41,7 @@ public class Room {
     private RoomType type;
 
     @NotNull(message = "Room capacity is required")
-    @Column(name = "capacity", nullable = false)
+    @Column(name = "capacity", nullable = false, columnDefinition = "INT CHECK (capacity <= 50)")
     private Integer capacity;
 
     @Column(nullable = false)

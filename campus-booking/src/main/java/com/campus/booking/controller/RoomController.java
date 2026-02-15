@@ -2,11 +2,14 @@ package com.campus.booking.controller;
 
 import com.campus.booking.domain.Room;
 import com.campus.booking.dto.RoomCreateDTO;
+import com.campus.booking.hateoas.RoomModelAssembler;
 import com.campus.booking.service.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,28 +21,46 @@ import java.util.List;
 public class RoomController {
 
     private final RoomService roomService;
+    private final RoomModelAssembler roomAssembler;
 
-    public RoomController(RoomService roomService) {
+    public RoomController(RoomService roomService,
+                          RoomModelAssembler roomAssembler) {
         this.roomService = roomService;
+        this.roomAssembler = roomAssembler;
     }
 
     // GET /api/rooms
     @GetMapping
-    public Page<Room> getAllRooms(
+    public PagedModel<EntityModel<Room>> getAllRooms(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return roomService.getAllRooms(pageable);
+        Page<Room> pageData = roomService.getAllRooms(pageable);
+
+        return PagedModel.of(
+                pageData.getContent().stream()
+                        .map(roomAssembler::toModel)
+                        .toList(),
+                new PagedModel.PageMetadata(
+                        pageData.getSize(),
+                        pageData.getNumber(),
+                        pageData.getTotalElements(),
+                        pageData.getTotalPages()
+                )
+        );
     }
+
 
     // GET /api/rooms/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Room> getRoom(@PathVariable Integer id) {
-        return roomService.getRoomById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public EntityModel<Room> getRoom(@PathVariable Integer id) {
+        Room room = roomService.getRoomById(id)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
+
+        return roomAssembler.toModel(room);
     }
+
 
     // POST /api/rooms
     @PostMapping

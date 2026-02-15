@@ -5,6 +5,8 @@ import com.campus.booking.dto.BookingDTO;
 import com.campus.booking.dto.BookingRequestDTO;
 import com.campus.booking.service.BookingService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.campus.booking.hateoas.BookingModelAssembler;
+
 
 import java.util.List;
 
@@ -21,36 +25,46 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final BookingModelAssembler bookingAssembler;
 
-    public BookingController(BookingService bookingService) {
+    public BookingController(BookingService bookingService,
+                             BookingModelAssembler bookingAssembler) {
         this.bookingService = bookingService;
+        this.bookingAssembler = bookingAssembler;
     }
 
     // GET /api/bookings
     @GetMapping
-    public Page<BookingDTO> getAllBookings(
+    public PagedModel<EntityModel<BookingDTO>> getAllBookings(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return bookingService.getAllBookingDTOs(pageable);
+        Page<Booking> pageData = bookingService.getAllBookings(pageable);
+
+        return PagedModel.of(
+                pageData.getContent().stream()
+                        .map(bookingAssembler::toModel)
+                        .toList(),
+                new PagedModel.PageMetadata(
+                        pageData.getSize(),
+                        pageData.getNumber(),
+                        pageData.getTotalElements(),
+                        pageData.getTotalPages()
+                )
+        );
     }
+
 
     // GET /api/bookings/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<BookingDTO> getBooking(@PathVariable Integer id) {
-        return bookingService.getBookingById(id)
-                .map(b -> new BookingDTO(
-                        b.getId(),
-                        b.getStudent().getStudentId(),
-                        b.getStudent().getName(),
-                        b.getRoom().getRoomCode(),
-                        b.getRoom().getType().toString(),
-                        b.getTimestamp()
-                ))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public EntityModel<BookingDTO> getBooking(@PathVariable Integer id) {
+        Booking booking = bookingService.getBookingById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        return bookingAssembler.toModel(booking);
     }
+
 
     // POST /api/bookings
     @PostMapping

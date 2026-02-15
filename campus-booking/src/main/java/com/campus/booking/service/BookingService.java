@@ -14,7 +14,7 @@ public interface BookingService {
 
     Optional<Booking> getBookingById(Integer id);
 
-//    List<Booking> getAllBookings();
+    Page<Booking> getAllBookings(Pageable pageable);
 
     Page<BookingDTO> getAllBookingDTOs(Pageable pageable);
 }

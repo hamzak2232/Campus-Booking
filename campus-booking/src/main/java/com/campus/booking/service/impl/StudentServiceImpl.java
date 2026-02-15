@@ -6,7 +6,7 @@ import com.campus.booking.dto.StudentCreateDTO;
 import com.campus.booking.dto.StudentDTO;
 import com.campus.booking.repository.StudentRepository;
 import com.campus.booking.service.StudentService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,11 +42,13 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Student> getStudentById(String studentId) {
         return studentRepository.findByStudentId(studentId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Student> getAllStudents(Pageable pageable) {
         return studentRepository.findAll(pageable);
     }

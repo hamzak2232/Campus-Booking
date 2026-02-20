@@ -6,8 +6,9 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
-import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 
@@ -15,8 +16,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "student", "room", "timestamp"})
 @EqualsAndHashCode(of = "id", callSuper = false)
-@SoftDelete(strategy = SoftDeleteType.DELETED, columnName = "is_deleted")
 @SQLDelete(sql = "UPDATE bookings SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 @Entity
 @Table(
         name = "bookings",

@@ -2,6 +2,7 @@ package com.campus.booking.controller;
 
 import com.campus.booking.domain.Room;
 import com.campus.booking.dto.RoomCreateDTO;
+import com.campus.booking.exception.ResourceNotFoundException;
 import com.campus.booking.hateoas.RoomModelAssembler;
 import com.campus.booking.service.RoomService;
 import jakarta.validation.Valid;
@@ -13,8 +14,6 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -54,9 +53,9 @@ public class RoomController {
 
     // GET /api/rooms/{id}
     @GetMapping("/{id}")
-    public EntityModel<Room> getRoom(@PathVariable Integer id) {
+    public EntityModel<Room> getRoom(@PathVariable Long id) {
         Room room = roomService.getRoomById(id)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found: " + id));
 
         return roomAssembler.toModel(room);
     }

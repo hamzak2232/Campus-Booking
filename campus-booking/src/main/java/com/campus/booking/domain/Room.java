@@ -1,22 +1,20 @@
 package com.campus.booking.domain;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
-import org.hibernate.annotations.*;
-
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.hibernate.type.SqlTypes;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"roomCode", "type", "available"})
 @EqualsAndHashCode(of = "roomCode", callSuper = false)
-@SoftDelete(strategy = SoftDeleteType.DELETED, columnName = "is_deleted")
 @SQLDelete(sql = "UPDATE rooms SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 @Entity
 @Table(
         name = "rooms",
@@ -28,7 +26,7 @@ public class Room extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "Room code is required")
     @Column(name = "room_code", nullable = false, unique = true, updatable = false, length = 50)

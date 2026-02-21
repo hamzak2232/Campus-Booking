@@ -1,24 +1,19 @@
 package com.campus.booking.domain;
 
+import com.campus.booking.domain.value.Email;
+import com.campus.booking.domain.value.PasswordHash;
 import jakarta.persistence.*;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.annotations.SoftDelete;
-import org.hibernate.annotations.SoftDeleteType;
-
-import org.hibernate.annotations.*;
-
-
 import lombok.*;
-import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA
 @ToString(of = {"studentId", "name", "role"})
 @EqualsAndHashCode(of = "studentId", callSuper = false)
-@SoftDelete(strategy = SoftDeleteType.DELETED, columnName = "is_deleted")
 @SQLDelete(sql = "UPDATE students SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 @Entity
 @Table(
         name = "students",
@@ -35,7 +30,7 @@ public class Student extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "{student.studentId.required}")
     @Column(name = "student_id", nullable = false, updatable = false, length = 20)
@@ -45,25 +40,40 @@ public class Student extends SoftDeletableEntity {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @NotBlank(message = "{student.email.required}")
-    @Email(message = "{student.email.invalid}")
-    @Column(nullable = false, unique = true, length = 100)
-    private String email;
+    @Embedded
+    private Email email;
 
-    @NotBlank(message = "{student.password.required}")
-    @Size(min = 8, message = "{student.password.min}")
-    @Column(nullable = false)
-    private String password;
+    @Embedded
+    private PasswordHash password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
-    public Student(String studentId, String name, String email, String password, Role role) {
+    public Student(String studentId, String name, Email email, PasswordHash password, Role role) {
         this.studentId = studentId;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
     }
+
+    /**
+     * Convenience getter for code that still expects a String.
+     */
+    public String getEmailValue() {
+        return email == null ? null : email.value();
+    }
+
+    /**
+     * Convenience getter for Spring Security, etc.
+     */
+    public String getPasswordValue() {
+        return password == null ? null : password.value();
+    }
+
+    public void setPassword(PasswordHash password) {
+        this.password = password;
+    }
+
 }

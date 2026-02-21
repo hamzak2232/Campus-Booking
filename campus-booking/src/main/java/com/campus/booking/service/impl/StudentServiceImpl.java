@@ -6,13 +6,14 @@ import com.campus.booking.dto.StudentCreateDTO;
 import com.campus.booking.dto.StudentDTO;
 import com.campus.booking.repository.StudentRepository;
 import com.campus.booking.service.StudentService;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.campus.booking.domain.value.Email;
+import com.campus.booking.domain.value.PasswordHash;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,11 +31,18 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student registerStudent(StudentCreateDTO dto) {
+
+        if (dto.password() == null || dto.password().isBlank()) {
+            throw new IllegalArgumentException("Password cannot be blank");
+        }
+
+        String hashed = passwordEncoder.encode(dto.password());
+
         Student student = new Student(
                 dto.studentId(),
                 dto.name(),
-                dto.email(),
-                passwordEncoder.encode(dto.password()),
+                new Email(dto.email()),
+                new PasswordHash(hashed),
                 Role.STUDENT
         );
 
@@ -59,7 +67,7 @@ public class StudentServiceImpl implements StudentService {
                 student.getId(),
                 student.getStudentId(),
                 student.getName(),
-                student.getEmail(),
+                student.getEmailValue(),
                 student.getRole()
         );
     }

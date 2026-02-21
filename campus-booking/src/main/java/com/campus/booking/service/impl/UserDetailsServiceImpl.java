@@ -2,7 +2,6 @@ package com.campus.booking.service.impl;
 
 import com.campus.booking.domain.Student;
 import com.campus.booking.service.StudentService;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User(
                 student.getStudentId(),
-                student.getPassword(),
+                student.getPasswordValue(),
                 List.of(new SimpleGrantedAuthority(student.getRole().name()))
         );
     }

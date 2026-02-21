@@ -4,14 +4,16 @@ import com.campus.booking.domain.Role;
 import com.campus.booking.domain.Room;
 import com.campus.booking.domain.RoomType;
 import com.campus.booking.domain.Student;
+import com.campus.booking.domain.value.Email;
+import com.campus.booking.domain.value.PasswordHash;
 import com.campus.booking.repository.StudentRepository;
 import com.campus.booking.service.RoomService;
-import com.campus.booking.service.StudentService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -30,6 +32,7 @@ public class CampusBookingApplication {
     }
 
     @Bean
+    @Profile("!test")
     CommandLineRunner seedData(
             StudentRepository repo,
             RoomService roomService,
@@ -38,23 +41,23 @@ public class CampusBookingApplication {
         return args -> {
 
             repo.findByStudentId("admin")
-                    .or(() -> repo.findByEmail("admin@campus.com"))
+                    .or(() -> repo.findByEmail_Value("admin@campus.com"))
                     .orElseGet(() -> repo.save(new Student(
                             "admin",
                             "System Admin",
-                            "admin@campus.com",
-                            encoder.encode(adminPassword),
+                            new Email("admin@campus.com"),
+                            new PasswordHash(encoder.encode(adminPassword)),
                             Role.ADMIN
                     )));
 
 
             repo.findByStudentId("s1")
-                    .or(() -> repo.findByEmail("hamza@campus.com"))
+                    .or(() -> repo.findByEmail_Value("hamza@campus.com"))
                     .orElseGet(() -> repo.save(new Student(
                             "s1",
                             "Hamza",
-                            "hamza@campus.com",
-                            encoder.encode(studentPassword),
+                            new Email("hamza@campus.com"),
+                            new PasswordHash(encoder.encode(studentPassword)),
                             Role.STUDENT
                     )));
 

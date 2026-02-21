@@ -9,13 +9,8 @@ import lombok.Getter;
 public abstract class SoftDeletableEntity extends AuditedEntity {
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean deleted = false;
+    protected boolean deleted = false;
 
-    public void softDelete() {
-        this.deleted = true;
-    }
-
-    public void restore() {
-        this.deleted = false;
-    }
+    public void softDelete() { this.deleted = true; }
+    public void restore() { this.deleted = false; }
 }

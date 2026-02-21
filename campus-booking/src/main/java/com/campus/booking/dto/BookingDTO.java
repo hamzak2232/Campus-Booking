@@ -1,10 +1,9 @@
 package com.campus.booking.dto;
 
-import java.awt.datatransfer.StringSelection;
 import java.time.LocalDateTime;
 
 public record BookingDTO(
-        Integer id,
+        Long id,
         String studentId,
         String studentName,
         String roomCode,

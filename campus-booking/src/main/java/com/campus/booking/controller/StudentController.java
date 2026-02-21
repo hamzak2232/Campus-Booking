@@ -3,20 +3,18 @@ package com.campus.booking.controller;
 import com.campus.booking.domain.Student;
 import com.campus.booking.dto.StudentCreateDTO;
 import com.campus.booking.dto.StudentDTO;
+import com.campus.booking.exception.ResourceNotFoundException;
 import com.campus.booking.hateoas.StudentModelAssembler;
 import com.campus.booking.service.StudentService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/students")
@@ -59,7 +57,7 @@ public class StudentController {
     public EntityModel<StudentDTO> getStudent(@PathVariable String studentId) {
         StudentDTO dto = studentService.getStudentById(studentId)
                 .map(studentService::toDTO)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found: " + studentId));
 
         return studentAssembler.toModel(dto);
     }

@@ -1,6 +1,5 @@
 package com.campus.booking.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +13,5 @@ import lombok.ToString;
 public class BookingRequestDTO {
 
     @NotNull(message = "Room ID is required")
-    private Integer roomId;
+    private Long roomId;
 }

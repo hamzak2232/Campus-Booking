@@ -4,16 +4,17 @@ import com.campus.booking.domain.Booking;
 import com.campus.booking.domain.Room;
 import com.campus.booking.domain.Student;
 import com.campus.booking.dto.BookingDTO;
+import com.campus.booking.exception.ConflictException;
+import com.campus.booking.exception.ResourceNotFoundException;
 import com.campus.booking.repository.BookingRepository;
 import com.campus.booking.repository.RoomRepository;
 import com.campus.booking.repository.StudentRepository;
 import com.campus.booking.service.BookingService;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,33 +36,30 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking createBooking(String studentId, Integer roomId) {
+    public Booking createBooking(String studentId, Long roomId) {
 
         Student student = studentRepository.findByStudentId(studentId)
-                .orElseThrow(() -> new IllegalArgumentException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found: " + studentId));
 
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found: " + roomId));
 
         bookingRepository.findByStudentAndRoom(student, room).ifPresent(b -> {
-            throw new IllegalStateException("Booking already exists for this student and room");
+            throw new ConflictException("Booking already exists for this student and room");
         });
 
         if (!room.isAvailable()) {
-            throw new IllegalStateException("Room is already booked");
+            throw new ConflictException("Room is already booked");
         }
 
         // Domain-driven way
         room.markUnavailable();
-
-        Booking booking = new Booking(student, room);
-
-        return bookingRepository.save(booking);
+        return bookingRepository.save(new Booking(student, room));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Booking> getBookingById(Integer id) {
+    public Optional<Booking> getBookingById(Long id) {
         return bookingRepository.findById(id);
     }
 

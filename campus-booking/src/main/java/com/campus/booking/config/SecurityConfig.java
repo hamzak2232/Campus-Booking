@@ -2,15 +2,15 @@ package com.campus.booking.config;
 
 import com.campus.booking.security.JwtAuthenticationFilter;
 import com.campus.booking.security.JwtUtil;
-import com.campus.booking.service.impl.UserDetailsServiceImpl;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,9 +18,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 import java.util.List;
+
+import static com.campus.booking.domain.Role.ADMIN;
+import static com.campus.booking.domain.Role.STUDENT;
 
 @Configuration
 public class SecurityConfig {
@@ -31,7 +33,7 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(
             JwtUtil jwtUtil,
-            UserDetailsServiceImpl userDetailsService
+            UserDetailsService userDetailsService
     ) {
         return new JwtAuthenticationFilter(jwtUtil, userDetailsService);
     }
@@ -45,7 +47,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider(
-            UserDetailsServiceImpl userDetailsService,
+            org.springframework.security.core.userdetails.UserDetailsService userDetailsService,
             PasswordEncoder passwordEncoder
     ) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -84,11 +86,21 @@ public class SecurityConfig {
                         )
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/**").hasAuthority("ADMIN")
+                        .requestMatchers("/actuator/**").hasAuthority(ADMIN.name())
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/students/**").hasAuthority("ADMIN")
-                        .requestMatchers("/api/rooms/**").hasAnyAuthority("ADMIN", "STUDENT")
-                        .requestMatchers("/api/bookings/**").hasAnyAuthority("ADMIN", "STUDENT")
+
+                        .requestMatchers("/api/students/**").hasAuthority(ADMIN.name())
+
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/rooms/**")
+                        .hasAnyAuthority(ADMIN.name(), STUDENT.name())
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/rooms/**")
+                        .hasAuthority(ADMIN.name())
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/rooms/**")
+                        .hasAuthority(ADMIN.name())
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/rooms/**")
+                        .hasAuthority(ADMIN.name())
+
+                        .requestMatchers("/api/bookings/**").hasAnyAuthority(ADMIN.name(), STUDENT.name())
                         .anyRequest().authenticated()
                 );
 

@@ -3,8 +3,13 @@ package com.campus.booking.controller;
 import com.campus.booking.domain.Booking;
 import com.campus.booking.dto.BookingDTO;
 import com.campus.booking.dto.BookingRequestDTO;
+import com.campus.booking.exception.ResourceNotFoundException;
+import com.campus.booking.hateoas.BookingModelAssembler;
 import com.campus.booking.service.BookingService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -12,13 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import com.campus.booking.hateoas.BookingModelAssembler;
-
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -58,9 +56,9 @@ public class BookingController {
 
     // GET /api/bookings/{id}
     @GetMapping("/{id}")
-    public EntityModel<BookingDTO> getBooking(@PathVariable Integer id) {
+    public EntityModel<BookingDTO> getBooking(@PathVariable Long id) {
         Booking booking = bookingService.getBookingById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found: " + id));
 
         return bookingAssembler.toModel(booking);
     }

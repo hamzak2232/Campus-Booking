@@ -2,13 +2,10 @@ package com.campus.booking.domain;
 
 
 import jakarta.persistence.*;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-
 
 import java.time.LocalDateTime;
 
@@ -34,7 +31,7 @@ public class Booking extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NotNull(message = "Booking must have a student")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
